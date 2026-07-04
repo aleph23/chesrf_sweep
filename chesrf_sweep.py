@@ -25,12 +25,17 @@ if shutil.which('hackrf_sweep') is None:
     sys.exit(1)
 
 # Build command
-command_str = ['hackrf_sweep', '-1',
-               '-f', '{}:{}'.format(args.bottom, args.top),
-               '-w', '{}'.format(args.width)]
+command_str = [
+    'hackrf_sweep',
+    '-1',
+    '-f',
+    f'{args.bottom}:{args.top}',
+    '-w',
+    f'{args.width}',
+]
 
 # Run command and return output if there was a problem
-print('Running command: {}'.format(' '.join(command_str)))
+print(f"Running command: {' '.join(command_str)}")
 command = subprocess.run(command_str, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 if command.returncode != 0:
@@ -42,8 +47,8 @@ print('Reading output')
 csvreader = csv.reader(io.StringIO(command.stdout.decode()), delimiter=',', skipinitialspace=True)
 
 # Loop over the results and do the do
-print('Offsetting results by {} Hz'.format(args.offset))
-print('Adjusting gain by {}{} dB'.format(('+' if args.gain > 0 else ''), args.gain))
+print(f'Offsetting results by {args.offset} Hz')
+print(f"Adjusting gain by {'+' if args.gain > 0 else ''}{args.gain} dB")
 freqs = []
 powers = []
 for line in csvreader:
@@ -63,7 +68,7 @@ for line in csvreader:
 results = list(zip(freqs, powers))
 
 # Save the output
-print('Saving output to {}'.format(args.output))
+print(f'Saving output to {args.output}')
 with open(args.output, 'w') as csvfile:
     csvwriter = csv.writer(csvfile)
     for result in results:
